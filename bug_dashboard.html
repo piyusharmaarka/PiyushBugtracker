@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rwanda 26.01 – Bug &amp; Feedback Tracker</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7f9; --surface:#ffffff; --ink:#1b2333; --muted:#5f6b7d; --rule:#d9dde4;
+  --navy:#1f2a44; --navy-soft:#e8ebf2; --grey:#9aa3b2; --grey-soft:#eef0f3;
+  --green:#2f5d50; --green-soft:#e4eeea; --red:#8f2f2f; --red-soft:#f4e5e5;
+  --amber:#7a5b14; --amber-soft:#f3ecd9; --slate:#4a5a78; --slate-soft:#e6eaf1;
+  --font:Calibri,Arial,Helvetica,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141c; --surface:#171c27; --ink:#e6e9ef; --muted:#9aa4b5; --rule:#2a3140;
+    --navy:#9db4e6; --navy-soft:#222b40; --grey:#6b7587; --grey-soft:#1f2531;
+    --green:#7fc0a8; --green-soft:#1c2c27; --red:#e19a9a; --red-soft:#331f20;
+    --amber:#d9b863; --amber-soft:#2e2713; --slate:#9fb0d0; --slate-soft:#1f2635;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141c; --surface:#171c27; --ink:#e6e9ef; --muted:#9aa4b5; --rule:#2a3140;
+  --navy:#9db4e6; --navy-soft:#222b40; --grey:#6b7587; --grey-soft:#1f2531;
+  --green:#7fc0a8; --green-soft:#1c2c27; --red:#e19a9a; --red-soft:#331f20;
+  --amber:#d9b863; --amber-soft:#2e2713; --slate:#9fb0d0; --slate-soft:#1f2635;
+}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45}
+.wrap{max-width:1280px;margin:0 auto;padding:24px 20px 48px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--rule)}
+h1{margin:0;font-size:22px;font-weight:700;color:var(--navy);letter-spacing:.1px}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+button,.btn,select,input[type=text],input[type=date]{font-family:var(--font);font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:6px 10px}
+button,.btn{cursor:pointer}
+button:hover,.btn:hover{border-color:var(--navy)}
+.btn-primary{background:var(--navy);color:var(--surface);border-color:var(--navy)}
+:root[data-theme="dark"] .btn-primary{color:#10141c}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.kpi{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:12px 14px;text-align:left;cursor:pointer}
+.kpi .n{font-size:28px;font-weight:700;color:var(--navy);line-height:1.1}
+.kpi .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:4px}
+.kpi.active{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:14px 16px;min-width:0}
+.card h2{margin:0 0 10px;font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.6px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.hbar{display:grid;grid-template-columns:150px 1fr 34px;gap:8px;align-items:center;margin:6px 0;cursor:pointer;font-size:13px}
+.hbar .lab{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbar .track{height:10px;background:var(--grey-soft);border-radius:2px;overflow:hidden}
+.hbar .fill{height:100%;background:var(--navy)}
+.hbar .val{text-align:right;color:var(--muted)}
+.hbar.sel .lab{font-weight:700;color:var(--navy)}
+.hbar:hover .lab{color:var(--navy)}
+.cols{display:flex;align-items:flex-end;gap:6px;height:150px;padding-top:6px;overflow-x:auto}
+.col{flex:1 0 34px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;cursor:pointer;font-size:11px;color:var(--muted)}
+.col .stack{width:100%;max-width:34px;display:flex;flex-direction:column-reverse}
+.col .s1{background:var(--navy)} .col .s2{background:var(--grey)}
+.col .tot{margin-bottom:2px;color:var(--ink);font-size:11px}
+.col.sel .lab{color:var(--navy);font-weight:700}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:18px 0 10px}
+.filters input[type=text]{min-width:240px;flex:1 1 240px}
+.count{color:var(--muted);font-size:13px;margin:0 0 8px}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--rule);border-radius:4px}
+table{border-collapse:collapse;width:100%;min-width:900px}
+th{position:sticky;top:0;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:var(--surface);border-bottom:1px solid var(--navy);padding:9px 10px;cursor:pointer;white-space:nowrap}
+th.sorted{color:var(--navy)}
+td{padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--grey-soft)}
+td.issue{min-width:320px;max-width:520px}
+.chip{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;border:1px solid var(--rule);white-space:nowrap}
+.c-Closed{background:var(--green-soft);color:var(--green);border-color:var(--green)}
+.c-Reopened{background:var(--red-soft);color:var(--red);border-color:var(--red)}
+.c-Open,.c-Needs{background:var(--amber-soft);color:var(--amber);border-color:var(--amber)}
+.c-Fixed,.c-Pending,.c-Intermittent{background:var(--slate-soft);color:var(--slate);border-color:var(--slate)}
+.c-Not,.c-Deferred,.c-Duplicate{background:var(--grey-soft);color:var(--muted);border-color:var(--grey)}
+tr.detail td{background:var(--grey-soft);padding:12px 16px}
+.detail pre{white-space:pre-wrap;word-break:break-word;font-family:var(--font);margin:0 0 8px;max-height:260px;overflow:auto}
+.detail .k{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:8px}
+a{color:var(--navy)}
+.note{margin-top:18px;color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:10px}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+@media (max-width:600px){.hbar{grid-template-columns:110px 1fr 28px}.wrap{padding:16px 12px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Rwanda 26.01 – Bug &amp; Feedback Tracker</h1>
+      <div class="sub" id="sub"></div>
+    </div>
+    <div class="actions">
+      <label class="btn">Load updated Excel<input id="file" type="file" accept=".xlsx,.xls" hidden></label>
+      <button id="exportBtn">Export filtered CSV</button>
+      <button id="resetData" hidden>Reset to original</button>
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="grid">
+    <div class="card"><h2>Status</h2><div id="chStatus"></div></div>
+    <div class="card"><h2>Reported per day</h2><div class="cols" id="chDays"></div>
+      <div class="legend"><span><i style="background:var(--navy)"></i>Closed</span><span><i style="background:var(--grey)"></i>Not closed</span></div></div>
+    <div class="card"><h2>Dev status</h2><div id="chDev"></div></div>
+    <div class="card"><h2>Reported by</h2><div id="chBy"></div></div>
+  </section>
+
+  <section class="filters">
+    <input type="text" id="q" placeholder="Search issue, comments, reporter…">
+    <select id="fStatus"></select>
+    <select id="fDev"></select>
+    <select id="fBy"></select>
+    <select id="fDay"></select>
+    <button id="clear">Clear filters</button>
+  </section>
+  <p class="count" id="count"></p>
+  <div class="tablewrap"><table>
+    <thead><tr id="thead"></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table></div>
+
+  <p class="note">Status is derived from the sheet: latest QA comment result first, then 2nd sanity, then Dev status, then QA status. Dates are shown in IST; items without a date use the Slack message time, or are listed as undated. Auth tokens pasted in the source sheet are redacted.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const ORIGINAL = [{"sr": 1, "desc": "Hi @Saurabh Limaye sir, The Fee Config is not as per the Huza Prod.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790859968816019", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "", "qa2": "", "qac": "", "devc": "This is as per the employer set up in Huza"}, {"sr": 2, "desc": "Hi @Saurabh Limaye SIr, The receiver name is missing in SMS for a customer in HUZA Dev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790861725504069", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": "Compare with current prod"}, {"sr": 3, "desc": "Hi @Saurabh Limaye Sir The Email verification on registration is not working in HUZA Dev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790861795437669", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 4, "desc": "Hi @Om Shri Raikwar The photo upload is failing in Huza dev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790861970659869", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 5, "desc": "Hi @Saurabh Limaye sir, The pocket account is not getting created in HUZA dev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790862468932119", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Failed", "dev": "Fixed", "qa2": "Failed", "qac": "", "devc": ""}, {"sr": 6, "desc": "Hi @Abhishek The link type is missing while doing role transaction mapping in HUZA DEV", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790863409427499", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": "Hello Aman Sen Please move the lookup"}, {"sr": 7, "desc": "HI @Abhishek, the Customer Pocket creation field in Huza Dev is missing in this screen .", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790863569656419", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 8, "desc": "Hi @Abhishek The color of the stepper icons is different for maker and approver, please make it consistent", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790865846371419", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed (Please elaborate)", "qa2": "", "qac": "The colors are still same", "devc": ""}, {"sr": 9, "desc": "Hi @Saurabh Limaye Sir, Unable to claim employer creation request in HUZA DEV", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790865975477679", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 10, "desc": "Hi @Abhishek, currently the timeline looks quite technical and may not be very convenient for an end user to understand. Could we make the timeline more generic, user-friendly, and action-oriented?", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790866194265989", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "", "dev": "Fixed", "qa2": "", "qac": "", "devc": "Saurabh Limaye sir please guide  for the this\nNew UI Updated."}, {"sr": 11, "desc": "Workforce validation message", "link": "", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 12, "desc": "Employer onboarding success message and document upload status modal", "link": "", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 13, "desc": "Draft status failed issue", "link": "", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Failed", "dev": "Fixed", "qa2": "Pending at QA", "qac": "", "devc": "{\"txn_header\":{\"txn_no\":71545,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"user_no\":100085,\"draft_id\":\"efdf4861-deec-4510-8744-5378b87135e0\",\"status\":9,\"rec_no\":7}}\n\n{\n    \"result\": {\n        \"new_txn_id\": \"107260921000007684\",\n        \"status\": \"E\",\n        \"message\": [\n            \"Your request could not be completed (code 12112)\"\n        ]\n    }\n}"}, {"sr": 14, "desc": "Hi @Abhishek, Under the approval workbench, the search on the basis of subject is not working. This is a known issue, posting it for tracking purposes - Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1790943096918279", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1790943096.91827, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 15, "desc": "Currently, there is no way for the user to identify which fee has been applied to a specific employer. For better usability and clarity, the fee should be clearly mapped/displayed against the respective employer.", "link": "", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 16, "desc": "Approval workbench should have transaction ID as column for tracking purpose", "link": "", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 17, "desc": "Log all the approved and rejected requests somewhere for tracking purposes", "link": "", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": "Please direct me to the screen"}, {"sr": 18, "desc": "Hi @Saurabh Limaye Sir, GLIF enquiry are not getting genreated in Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791194530432489", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791194530.43248, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 19, "desc": "Hi @Saurabh Limaye, I’m getting a “Not a valid transaction” error while configuring the transaction for the deduction file upload functionality.\nAlthough the role I’m using to provide the required access already has access to the transaction that is failing here.\nCould you please check what might be causing this issue? HUZADEV", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791195792118059", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791195792.11805, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 20, "desc": "Hi @Saurabh Limaye Sir, @Rithik Agrawal, we’re getting a “Failed to submit response” error when submitting the deduction response from the Staff Portal.\n please help check this issue on Huzadev?\n\n\n\n```Request - {\"txn_header\":{\"txn_no\":11306,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"create_date\":\"2026-08-20T00:11:34.479828+02:00\",\"create_txn_id\":\"-1\",\"created_by\":-1,\"update_date\":null,\"update_txn_id\":null,\"update_by\":null,\"record_id\":\"eafae273-c851-4918-84b1-543eaa2e1b05\",\"request_id\":\"e851e888-d085-4121-a5e5-e04cea14ea6d\",\"employer_no\":10001,\"cut_off_date\":\"2026-08-20\",\"total_deduction_amt\":808952.49,\"total_received_amt\":\"40.48\",\"emp_repayment_reference_number\":\"asdf dsfsdf\",\"emp_repayment_bank\":\"2\",\"emp_repayment_date\":\"2026-10-05\",\"response_received_date\":null,\"response_approval_date\":null,\"response_approved_by\":null,\"status\":4,\"ded_type\":\"credit\",\"request_reference_no\":\"10001200826\",\"deductions\":[{\"inst_no\":\"107\",\"create_date\":\"2026-08-20T00:11:34.546855+02:00\",\"create_txn_id\":\"-1\",\"created_by\":-1,\"update_date\":null,\"update_txn_id\":null,\"update_by\":null,\"record_id\":\"14b95c03-412a-4db6-8333-4f00100fcd37\",\"request_id\":\"e851e888-d085-4121-a5e5-e04cea14ea6d\",\"cust_no\":\"1000000001\",\"prim_id_type\":3,\"prim_id_no\":\"PASSPORT1\",\"employee_id\":1,\"mobile_no\":917008145177,\"current_due_amt\":null,\"request_due_amt\":32.13,\"response_due_amt\":\"3\",\"first_name\":\"Amlan\",\"middle_name\":\"\",\"last_name\":\"Mohanty\",\"comments\":null,\"cut_off_date\":\"2026-08-20\",\"due_date\":\"2026-08-25\",\"prms_deduction_reference\":null,\"employment_status\":\"E\",\"acct_dedd\":[],\"employee_no\":null,\"full_name\":\"Amlan Mohanty\"},{\"inst_no\":\"107\",\"create_date\":\"2026-08-20T00:11:34.575422+02:00\",\"create_txn_id\":\"-1\",\"created_by\":-1,\"update_date\":null,\"update_txn_id\":null,\"update_by\":null,\"record_id\":\"c8f14c8e-d7c6-4192-b64f-71ace689e29b\",\"request_id\":\"e851e888-d085-4121-a5e5-e04cea14ea6d\",\"cust_no\":\"1000000002\",\"prim_id_type\":1,\"prim_id_no\":\"10101010\",\"employee_id\":6,\"mobile_no\":917738067667,\"current_due_amt\":null,\"request_due_amt\":37.48,\"response_due_amt\":37.48,\"first_name\":\"Demo\",\"middle_name\":\"Kumar\",\"last_name\":\"User\",\"comments\":null,\"cut_off_date\":\"2026-08-20\",\"due_date\":\"2026-08-25\",\"prms_deduction_reference\":null,\"employment_status\":\"E\",\"acct_dedd\":[],\"employee_no\":null,\"full_name\":\"Demo Kumar User\"},{\"inst_no\":\"107\",\"create_date\":\"2026-08-20T00:11:34.592704+02:00\",\"create_txn_id\":\"-1\",\"created_by\":-1,\"update_date\":null,\"update_txn_id\":null,\"update_by\":null,\"record_id\":\"00e3cd11-4848-4732-8e1b-b73cf70e9127\",\"request_id\":\"e851e888-d085-4121-a5e5-e04cea14ea6d\",\"cust_no\":\"1000000026\",\"prim_id_type\":1,\"prim_id_no\":\"37018120\",\"employee_id\":54,\"mobile_no\":250792823522,\"current_due_amt\":null,\"request_due_amt\":428.32,\"response_due_amt\":\"0\",\"first_name\":\"Nancy\",\"middle_name\":\"Tyra\",\"last_name\":\"Atieno\",\"comments\":null,\"cut_off_date\":\"2026-08-20\",\"due_date\":\"2026-08-25\",\"prms_deduction_reference\":null,\"employment_status\":\"E\",\"acct_dedd\":[],\"employee_no\":\"FEL0\n… [truncated]", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791197061339449", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791197061.33944, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 21, "desc": "Hi @Saurabh Limaye Sir, @Aman Sen, getting an unknown error while creating a partner user in Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791198209753319", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791198209.75331, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": "Need to be fixed on FE and will need some development"}, {"sr": 22, "desc": "Hi @Aman Sen, please move this lookup. If possible, could you also copy the lookups from PROD to this environment so that we can continue testing without any hiccups? huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791199569604129", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791199569.60412, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 23, "desc": "Hi @Saurabh Limaye Sir, The deduction file approval is not working Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791225213581169", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791225213.58116, "qa": "Failed", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": "{\n    \"result\": {\n        \"new_txn_id\": \"107260921000005475\",\n        \"status\": \"E\",\n        \"message\": {\n            \"deductions\": {\n                \"3\": {\n                    \"response_due_amt\": [\n                        \"Field may not be null.\"\n                    ]\n                },\n                \"4\": {\n                    \"response_due_amt\": [\n                        \"Field may not be null.\"\n                    ]\n                },\n                \"5\": {\n                    \"response_due_amt\": [\n                        \"Field may not be null.\"\n                    ]\n                }\n            }\n        }\n    }\n}[11:27 AM]The response amount captured for the last 3 employees is null maybe capture them as 0 and retry (edited)"}, {"sr": 24, "desc": "Hi @Saurabh Limaye Sir, The emails for Staff User creation are not configured in Themis, hence they were not received in Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791267919745179", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791267919.74517, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": "Ref to This issue"}, {"sr": 25, "desc": "Hi @Saurabh Limaye Sir, The user role desc are missing for a few roles in Huzadev.\nCapturing it to avoid leaks during Ecobank", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791272343160929", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791272343.16092, "qa": "", "dev": "Fixed", "qa2": "Failed", "qac": "", "devc": ""}, {"sr": 26, "desc": "Hi @Saurabh Limaye Sir, while approving drafts from Role 90, the draft does not get updated and continues to remain on the screen even after submitting it in Huzadev. Could you please check?", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791272543340819", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791272543.34081, "qa": "Replicable", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": "{\"txn_header\":{\"txn_no\":71545,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"user_no\":100085,\"rec_no\":7,\"draft_id\":\"efdf4861-deec-4510-8744-5378b87135e0\",\"draft_json\":{\"fee\":[],\"access_info\":{\"bor_access\":\"N\",\"dep_access\":\"N\",\"pay_access\":\"Y\",\"prt_access\":\"N\"},\"contact_info\":{\"primary_contact\":{},\"secondary_contact\":{}},\"payroll_info\":{\"payroll_id\":0},\"affordability\":{\"min_take_home\":40,\"min_take_home_mrd\":40,\"minimum_take_home_type\":\"P\"},\"kyb_documents\":[{\"doc_code\":\"11\"},{\"doc_code\":\"12\"},{\"doc_code\":\"14\"},{\"doc_code\":\"15\"}],\"bor_access_info\":{},\"company_profile\":{\"name\":\"Test Name\",\"partner_no\":1000,\"legal_entity_name\":\"Test Name Legal\"},\"dep_access_info\":{},\"pay_access_info\":{\"max_pay_amt\":500000,\"min_pay_amt\":10,\"pay_max_afford_limit\":\"0\",\"max_pay_installments_no\":\"1\"},\"prt_access_info\":{}},\"subject\":\"Test Name\"}}\n\n{\n    \"result\": {\n        \"new_txn_id\": \"107260921000007739\",\n        \"status\": \"E\",\n        \"message\": [\n            \"Your request could not be completed (code 12112)\"\n        ]\n    }\n}"}, {"sr": 27, "desc": "Hi I have updated the role descriptions @Piyush Sharma in Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791274371011739?thread_ts=1791272343.160929&cid=C077R8W3894", "channel": "", "severity": "", "by": "@CK", "ts": 1791274371.01173, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 28, "desc": "Hi @Saurabh Limaye Sir, Unable to login to partner portal in Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791281804395199", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791281804.39519, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 29, "desc": "Hi @Saurabh Limaye Sir, Unable to download customers settlement quote in Huzadev\n\n\n```Request - {\"txn_header\":{\"txn_no\":70072,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"run_key\":\"a9c752af222947ed9417bfeea8e9b9ca\"}}```\n```response - {\n    \"result\": {\n        \"new_txn_id\": \"107260921000006158\",\n        \"status\": \"E\",\n        \"message\": \"No output file for this job run\"\n    }\n}```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791282044295849", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791282044.29584, "qa": "Failed", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 30, "desc": "Hi @Saurabh Limaye Sir, getting below error while claimimg a request from role 39 in huzadev,\n\n```request - {\"txn_header\":{},\"txn_body\":{\"inst_no\":\"107\",\"actor\":{\"orig_system\":\"POWERCORE_UAD\",\"orig_system_id\":\"100012\"}}}```\n```{\n    \"status\": \"E\",\n    \"result\": {\n        \"message\": \"step 'check' is not claimable. Most steps go to one person or to a group where everybody must act, so the definition has to say `claimable: true` for a step where one person picks the work up and the rest should leave it alone\"\n    }\n}```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791282845527359", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791282845.52735, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 31, "desc": "Hi @Saurabh Limaye Sir, the account statement is not getting generated. However, after clicking on the Generate Statement button, I’m getting the below toast prompt. Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791283221547099", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791283221.54709, "qa": "Failed", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 32, "desc": "Hi @Abhishek @Saurabh Limaye Sir, the receipts under the Payment tab in Customer Management are displaying Power details instead of bank details in Huzadev. Could you please check?", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791283401375999", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791283401.37599, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 33, "desc": "Hi @Abhishek, upon editing the workforce, the Company Name is coming blank. Also, I believe the Company dropdown appears to be blank. Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791283773351309", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791283773.3513, "qa": "Intermittent", "dev": "Not Replicable(if issue for any particular user please share)", "qa2": "Intermittent", "qac": "", "devc": ""}, {"sr": 34, "desc": "Hi @Saurabh Limaye Sir, Unable to edit workforce from role 9 in Huzadev.\n\n\nPlease find the curl below -\n\n```curl --url ^\"https://core-rwhuzadev.yourpower.io/coreapi/api/v1.0/stf/relay/transactions^\" ^\n  -H ^\"accept: application/json, text/plain, */*^\" ^\n  -H ^\"accept-language: en-US,en;q=0.9^\" ^\n  -H ^\"authorization: Bearer [redacted]^\" ^\n  -H ^\"content-type: application/json^\" ^\n  -H ^\"origin: https://core-rwhuzadev.yourpower.io^\" ^\n  -H ^\"priority: u=1, i^\" ^\n  -H ^\"referer: https://core-rwhuzadev.yourpower.io/contextscreen/customerMaster/contextedit^\" ^\n  -H ^\"sec-ch-ua: ^\\^\"Chromium^\\^\";v=^\\^\"154^\\^\", ^\\^\"Google Chrome^\\^\";v=^\\^\"154^\\^\", ^\\^\"Not A^(Brand^\\^\";v=^\\^\"99^\\^\"^\" ^\n  -H ^\"sec-ch-ua-mobile: ?0^\" ^\n  -H ^\"sec-ch-ua-platform: ^\\^\"Windows^\\^\"^\" ^\n  -H ^\"sec-fetch-dest: empty^\" ^\n  -H ^\"sec-fetch-mode: cors^\" ^\n  -H ^\"sec-fetch-site: same-origin^\" ^\n  -H ^\"user-agent: Mozilla/5.0 ^(Windows NT 10.0; Win64; x64^) AppleWebKit/537.36 ^(KHTML, like Gecko^) Chrome/154.0.0.0 Safari/537.36^\" ^\n  -H ^\"x-core-channelaccesskey: [redacted]^\" ^\n  --data-raw ^\"^{^\\^\"txn_header^\\^\":^{^\\^\"txn_no^\\^\":11311,^\\^\"channel_id^\\^\":20,^\\^\"maker^\\^\":100010,^\\^\"api_version^\\^\":^\\^\"1^\\^\",^\\^\"role_no^\\^\":9^},^\\^\"txn_body^\\^\":^{^\\^\"inst_no^\\^\":^\\^\"107^\\^\",^\\^\"create_date^\\^\":^\\^\"2026-10-06T07:52:00.533109+02:00^\\^\",^\\^\"create_txn_id^\\^\":^\\^\"107260921000005448^\\^\",^\\^\"created_by^\\^\":910000,^\\^\"record_id^\\^\":^\\^\"01a10fc4-d61b-7aaf-b31b-a28a99baf7e9^\\^\",^\\^\"employer_no^\\^\":10026,^\\^\"status^\\^\":0,^\\^\"employee_id^\\^\":208,^\\^\"employee_no^\\^\":^\\^\"SF08^\\^\",^\\^\"first_name^\\^\":^\\^\"Piyush^\\^\",^\\^\"last_name^\\^\":^\\^\"Test1^\\^\",^\\^\"employment_type^\\^\":1,^\\^\"employment_status^\\^\":^\\^\"E^\\^\",^\\^\"basic_sal^\\^\":18000,^\\^\"allowance^\\^\":0,^\\^\"gross_sal^\\^\":^\\^\"18000.00^\\^\",^\\^\"statutory_ded^\\^\":950,^\\^\"non_statutory_ded^\\^\":0,^\\^\"mobile_no^\\^\":250799001628,^\\^\"email_id^\\^\":^\\^\"Dummy1^@gmail.com^\\^\",^\\^\"date_of_birth^\\^\":^\\^\"1993-11-09^\\^\",^\\^\"date_of_joining^\\^\":^\\^\"2021-11-01^\\^\",^\\^\"department^\\^\":null,^\\^\"prim_id_type^\\^\":1,^\\^\"prim_id_no^\\^\":^\\^\"1100011^\\^\",^\\^\"gender^\\^\":^\\^\"M^\\^\",^\\^\"payroll_id^\\^\":0,^\\^\"deviation_limit_amt^\\^\":0,^\\^\"deviation_limit_per^\\^\":0,^\\^\"stop_deduction_flag^\\^\":^\\^\"N^\\^\",^\\^\"contract_end_date^\\^\":null,^\\^\"refresh_date^\\^\":^\\^\"2026-09-21^\\^\",^\\^\"net_salary^\\^\":^\\^\"17050.00^\\^\",^\\^\"update_by_request^\\^\":^\\^\"I^\\^\"^}^}^\"```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791283866072149", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791283866.07214, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 35, "desc": "Hi @Rithik Agrawal Please Help me in providing the above transaction access in Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791284189411369", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791284189.41136, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 36, "desc": "Hi @Saurabh Limaye Sir, Getting an unknown error as soon as I get into the Loan application Tab In Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791284914330399", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791284914.33039, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": "Tab is removed"}, {"sr": 37, "desc": "Hi @Saurabh Limaye Sir, I’m getting a “Resource not found” error when clicking on the Queue option in Huzadev.\nCan we remove this option if it is no longer required? Also, please confirm whether we still need the Queue option for EcoBank.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791285141793119", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791285141.79311, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 38, "desc": "Hi @Saurabh Limaye Sir, please assist in providing the customer access/update access to Roles 9 and 39 under the Maker-Checker setup in Huzadev.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791285696865199", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791285696.86519, "qa": "", "dev": "Fixed", "qa2": "", "qac": "", "devc": "12527 — permission required to update access\n12528 — Institution (1001) Enable\n12538 — Institution (1001) Disable\n12529 — Customer Type (1002) Enable\n12539 — Customer Type (1002) Disable\n12530 — Partner (1003) Enable\n12540 — Partner (1003) Disable\n12531 — Power Access (1004) Enable\n12541 — Power Access (1004) Disable\n12532 — Company Access (1005) Enable\n12542 — Company Access (1005) Disable\n12533 — Employee's Access (1006) Enable\n12543 — Employee's Access (1006) Disable\n12534 — Customer's Access (1007) Enable\n12544 — Customer's Access (1007) Disable"}, {"sr": 39, "desc": "Hi @Saurabh Limaye Sir, the email communication for Staff User password reset is not going through. Could you please check? Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791285850226119", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791285850.22611, "qa": "Failed", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 40, "desc": "Hi @Saurabh Limaye Sir, @Abhishek, the Separate Access tab under Workforce and the Company tab are not visible for any of the roles in Huzadev. Please assist.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791286201849399", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791286201.84939, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": "12129\n12130"}, {"sr": 41, "desc": "Hi @Saurabh Limaye Sir, the dates under the Statement tab of Salary Advance are not getting stamped in Huzadev. Please assist.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791286368350159", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791286368.35015, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": "txn_date stamped as null \n\n{\"txn_header\":{\"txn_no\":40017,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"extra_args\":{\"limit\":200,\"offset\":0,\"order\":{\"txn_date\":\"desc\"}},\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"acct_no\":4000000005,\"txn_type\":[1,10]}}\n\n\n{\n    \"result\": {\n        \"new_txn_id\": \"107260921000007986\",\n        \"status\": \"S\",\n        \"message\": [\n            {\n                \"txn_date\": null,\n                \"txn_id\": \"107261001000000252\",\n                \"txn_desc\": \"Send Money\",\n                \"txn_amt\": 10.0,\n                \"total_tax_amt\": 0.06,\n                \"total_power_fee\": 0.35,\n                \"total_interest\": null,\n                \"total_third_party_fee\": null,\n                \"total_txn_amt\": 10.41,\n                \"acct_bal\": 181.16,\n                \"status\": 20,\n                \"txn_no\": 41506,\n                \"txn_ref_no1\": \"30933192523\",\n                \"txn_ref_no2\": \"aCtfG4pa97usuGHjyUwvN6\",\n                \"ben_biz_no\": null,\n                \"ben_acct_no\": null,\n                \"ben_mob_no\": \"250788379438\",\n                \"user_remarks\": null,\n                \"acct_no\": 4000000005,\n                \"parent_txn_id\": null\n            },"}, {"sr": 42, "desc": "Hi @Abhishek, these fields are coming up blank under Workforce Search in the Huzadev Staff Portal. Please assist.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791290767866599", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791290767.86659, "qa": "intermittent", "dev": "Not Replicable", "qa2": "Intermittent", "qac": "", "devc": ""}, {"sr": 43, "desc": "Hi @Saurabh Limaye Sir, as discussed earlier, we need to change the Account Type from DEP to IAC. Noting it here so we don’t miss it. Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791291374263779", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791291374.26377, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": "Migration needed to IAC module"}, {"sr": 44, "desc": "Hi @Abhishek, the Partner User grid takes some time to load and does not appear immediately. The user has to click on another tab and then come back to the Partner User tab for the grid to load. Kindly assist.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791291838127079", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791291374.26377, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 45, "desc": "No profile data found error in mobile app", "link": "", "channel": "", "severity": "", "by": "Om", "ts": null, "qa": "Pass", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 46, "desc": "Hi @Saurabh Limaye sir, @Om Shri Raikwar Getting Error on signup in huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791372522073909", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791372522.0739, "qa": "Pass", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 47, "desc": "Hi @Saurabh LimayeSir, The Transaction are getting reversed in HUZADEV, this was the same number which was used earlier", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791378078410949", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791378078.41094, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 48, "desc": "Hi @Saurabh Limaye Sir, User creation in the staff portal is failing- Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791380210679729", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791380210.67972, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 49, "desc": "Hi @Abhishek @Aman Sen, the status dropdown in the Approval workbench is blank. Please assist - HuzaDev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791381226867159", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791381226.86715, "qa": "Pass", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 50, "desc": "Hi @Ayush Rathore please change the logo here in huza borrow huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791457160564879", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791457160.56487, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 51, "desc": "Hi @Saurabh Limaye Sir,\nThe file creation job is being submitted successfully, but the generated file is not visible. As a result, we are unable to create a new deduction file in Huzadev.\nCould you please look into this issue and assist?", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791457718680869", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791457718.68086, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": "{\"txn_header\":{\"txn_no\":70071,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"job_run_param\":{\"module\":\"emp\",\"job_code\":\"deduction_regenerate_credit\"},\"job_input_param\":{\"employer_no\":10001,\"cut_off_date\":\"2026-09-20\",\"employer_ded_request\":\"Y\"}}}\n\n{\n    \"result\": {\n        \"new_txn_id\": \"107260921000017925\",\n        \"status\": \"S\",\n        \"message\": {\n            \"module\": \"emp\",\n            \"job_code\": \"deduction_regenerate_credit\",\n            \"run_key\": \"d466438125b34778b0d77a542efb10b2\",\n            \"display_name\": \"Regenerate Deduction File Credit\",\n            \"communication_flag\": \"\",\n            \"encrypt_output\": \"\",\n            \"inst_no\": \"107\",\n            \"rq_reference\": \"saq:job:power_low:eadf8696-c3ca-11f1-9027-8e127bef63a6\"\n        }\n    }\n}"}, {"sr": 52, "desc": "Hi @Saurabh Limaye Sir, The partner user has been created in Huzadev, but the email was not delivered.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791459746214289", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791459746.21428, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 53, "desc": "Hi @Saurabh Limaye Sir Hi @Saurabh Limaye getting an error while updating company access from staff portal from role 9 Huzadev\n\n\n```{\"txn_header\":{\"txn_no\":12532,\"channel_id\":20,\"maker\":100010,\"api_version\":\"1\",\"role_no\":9},\"txn_body\":{\"inst_no\":\"107\",\"profile_level_id\":\"1005\",\"profile_level_value\":\"10026\",\"profile_code\":\"PAY_ACCESS\",\"profile_option_value\":\"Y\",\"employer_name\":\"TEST1\",\"employer_no\":10026,\"screen_name\":\"companyScreen\"}}```\n\n\n```{\n    \"result\": {\n        \"new_txn_id\": \"107260921000014075\",\n        \"status\": \"E\",\n        \"message\": \"Unknown error occurred (ref: b7c93cf3-0071-451c-ae5c-1f201cd82419)\"\n    }\n}```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791459859526199", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791459859.52619, "qa": "", "dev": "Fixed", "qa2": "Failed", "qac": "Pass", "devc": ""}, {"sr": 54, "desc": "Hi @Saurabh Limaye sir, Getting Object Object error while changing employee access from role 9 in huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791462422061409", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791462422.0614, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 55, "desc": "Hi @Saurabh Limaye Sir, Getting Error on approval screen while approving access update - Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791462624555639", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791462624.55563, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 56, "desc": "Hi @Saurabh Limaye Sir, The updated access is not reflecting in the workforce access screen, huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791463034269959", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791463034.26995, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 57, "desc": "Hi @Abhishek, the changes \" current\" and \"requested\" are not visible for the checker while updating the access huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791463143377389", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791463143.37738, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 58, "desc": "Hi @Saurabh Limaye Sir,\nAs discussed, the affordability displayed to customers is lower than the expected amount configured in the affordability setup.\nI checked this with multiple other employers and could reproduce the issue consistently in Huzadev.\nCould you please look into this and assist.l", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791464343102419", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791464343.10241, "qa": "", "dev": "", "qa2": "", "qac": "Pass", "devc": "{\"txn_header\":{\"txn_no\":20055,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"cust_no\":\"1000000090\",\"display_detail\":\"Y\"}}"}, {"sr": 59, "desc": "Hi @Aman Sen Getting undefined error in add income screen in huzadev app", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791465614649779", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791465614.64977, "qa": "", "dev": "", "qa2": "", "qac": "Failed", "devc": ""}, {"sr": 60, "desc": "Hi @Saurabh Limaye sir, I tried a scenario where if the customer income source is marked inactive and if the user logs in to the mobile app to reactivate the income source the app prompts this error after user enters the otp huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791466179581409", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791466179.5814, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 61, "desc": "Hi @Saurabh Limaye Sir,\nWe are getting an \"Unknown Error\" while searching for fee linkage using the Fee Number field in Huzadev.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791466656170339", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791466656.17033, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 62, "desc": "Hello @Saurabh Limaye sir @CK @Rithik Agrawal Please can you check while generating borrow account summary why are we getting below error in huzadev.\n```{\"txn_header\":{\"txn_no\":70071,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"job_run_param\":{\"module\":\"bor\",\"job_code\":\"borrow_summary\",\"template_name\":\"template\",\"communication_flag\":\"Y\"},\"job_input_param\":{\"cust_no\":\"1000000090\"}}}```\n```{\n    \"result\": {\n        \"new_txn_id\": \"107260921000017412\",\n        \"status\": \"E\",\n        \"message\": [\n            \"Your request could not be completed (code 70042)\"\n        ]\n    }\n}```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791528102880269", "channel": "", "severity": "", "by": "@Abhishek", "ts": 1791528102.88026, "qa": "", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 63, "desc": "Hi @Rithik Agrawal, the fields in the settlement quote are right-aligned, let's make it left or center as per the kenya one Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791549349849829", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791549349.84982, "qa": "", "dev": "Not an Issue", "qa2": "", "qac": "Pass", "devc": "Same as Production No. change required"}, {"sr": 64, "desc": "Hi @Abhishek Change this to Created By in Huzadev,", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791550838709679", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791550838.70967, "qa": "", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 65, "desc": "Hi @Rithik Agrawal, now role 9 is not able to update company access in huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791551100540699", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791551100.54069, "qa": "", "dev": "", "qa2": "", "qac": "Duplicate - 54", "devc": ""}, {"sr": 66, "desc": "Hi @Abhishek Upon, filtering the approved request, the changes are not visible, Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791551569001639", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791551569.00163, "qa": "", "dev": "", "qa2": "Pass", "qac": "", "devc": "Saurabh Limaye Sir updated and current data is same."}, {"sr": 67, "desc": "Hi @Saurabh Limaye @Rithik Agrawal Noting this issue down As Eco bank critical, this is also in huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791553576850229", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791553576.85022, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": "{\"txn_header\":{\"txn_no\":10501,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"extra_args\":{\"limit\":100,\"offset\":0,\"searchable\":\"Y\",\"order\":{\"create_date\":\"desc\"}},\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"filter_spec\":[{\"field\":\"status\",\"op\":\"==\",\"value\":0},{\"field\":\"role_no\",\"op\":\"==\",\"value\":33}],\"sort_spec\":[{\"field\":\"user_no\",\"direction\":\"asc\"}]}}"}, {"sr": 68, "desc": "Hi @Ayush Rathore Please add MTN beside wallet to make this screen look more prominent in huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791786544634169", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791786544.63416, "qa": "", "dev": "", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 69, "desc": "Hi @Rithik Agrawal, @Abhishek, @CK, Getting Unknown error while trying to update Income source for a customer via staff portal huzadev . Kindly check\nPayload\n```{\"txn_header\":{\"txn_no\":21021,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"cust_no\":\"1000000176\",\"status\":0,\"employer_no\":10001,\"employee_id\":205,\"prim_id_no\":\"1234342664334\",\"emp_verification_flag\":0,\"name\":\"Demo Company Ltd\",\"email_id\":\"Outysdg@gmail.com\",\"mobile_no\":250796221999,\"employment_status\":\"E\",\"rec_no\":1}}```\nResponse\n```{\n    \"result\": {\n        \"new_txn_id\": \"107260921000022986\",\n        \"status\": \"E\",\n        \"message\": \"Unknown error occurred (ref: 2d435f38-c8e2-4130-b0c6-46d5e95df13a)\"\n    }\n}```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791789735093069", "channel": "", "severity": "", "by": "@Devansh Malviya", "ts": 1791789735.09306, "qa": "", "dev": "", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 70, "desc": "Hi @CK, @Rithik Agrawal, @Abhishek, The Failed login screen for huzadev has a Power logo instead of HUZA. Kindly check", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791790755810629", "channel": "", "severity": "", "by": "@Devansh Malviya", "ts": 1791790755.81062, "qa": "", "dev": "Fixed", "qa2": "", "qac": "", "devc": ""}, {"sr": 71, "desc": "Hi @Saurabh Limaye Sir, the Pay Plan in HUZADEV is displaying values with multiple decimal places instead of the expected format. Please assist", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791790834908199", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791790834.90819, "qa": "", "dev": "", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 72, "desc": "For Approved access request in apporval workbench the grid is not shown.", "link": "", "channel": "", "severity": "", "by": "Abhishek Malviya", "ts": null, "qa": "", "dev": "Will Cater in future deployments", "qa2": "", "qac": "", "devc": ""}, {"sr": 73, "desc": "Hi @Saurabh Limaye Sir, Multiple decimal issues are also there in the loan agreement in Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791791135944269", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791791135.94426, "qa": "", "dev": "", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 74, "desc": "Hi @Saurabh Limaye Sir,\nThe Loan Agreement generated in Huzadev currently contains Uganda-specific details, references, and clauses instead of those applicable to HUZA Rwanda.\nThe entire agreement needs to be reviewed and updated with the correct HUZA-specific terms, conditions, legal clauses, branding, and Rwanda-specific regulatory details. - Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791791246546919", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791791246.54691, "qa": "", "dev": "", "qa2": "Pending", "qac": "", "devc": ""}, {"sr": 75, "desc": "Hi @Saurabh Limaye Sir,\nThe transaction details for the loan I created in Huzadev are incorrectly displaying M-PESA instead of MTN.\nBoth the Loan Disbursement and Transaction Fee entries are referencing M-PESA, whereas they should reflect MTN for HUZADEv Rwanda.", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791794607612089", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791794607.61208, "qa": "", "dev": "fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 76, "desc": "Hi @Aman Sen, Unable to download the newly generated deduction file in Huzadev, please assist.\n\n```Request - {\"txn_header\":{\"txn_no\":70504,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"doc_code\":\"emp_dedd_req\",\"reference_1\":10001,\"reference_2\":\"5b2a02fb-cfc3-436b-8b37-77b86edfa572\"}}\n\nResponse - {\n    \"result\": {\n        \"new_txn_id\": \"107261012000000163\",\n        \"status\": \"E\",\n        \"message\": \"Unknown error occurred (ref: 61e62b67-f611-451b-b514-c7f62da6dc94)\"\n    }\n}```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791805939116989", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791805939.11698, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 77, "desc": "hi @Abhishek, the count in the approval workbench remains at zero even when requests are pending in it - Huzadev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791806305215929", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791806305.21592, "qa": "", "dev": "Fixed", "qa2": "Pass", "qac": "", "devc": ""}, {"sr": 78, "desc": "Hi @Rithik Agrawal Getting \" failed to update access error\" when updating customers' access from role 9 - Huza dev", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791806390292739", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": null, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 79, "desc": "Hi @CK, @Rithik Agrawal, @Abhishek, Unable to generate Deduction file in huzadev due to Endless loading while searching the Company. Kindly assist", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791810410889929", "channel": "", "severity": "", "by": "@Devansh Malviya", "ts": 1791810410.88992, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 80, "desc": "Hi @Saurabh Limaye Sir, @Rithik Agrawal The topped up account is not getting closed in Huzadev - Cust Number - 1000000180", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791818373770919", "channel": "", "severity": "", "by": "@Piyush Sharma", "ts": 1791818373.77091, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 81, "desc": "Hi @Abhishek, @Rithik Agrawal, @CK, Getting error upon click the search button under GL to GL transfer in huzadev . Kindly assist in providing the Transaction access if the user doesn't have it.\nPayload\n```{\"txn_header\":{\"txn_no\":30507,\"channel_id\":20,\"maker\":100085,\"api_version\":\"1\",\"extra_args\":{\"limit\":20,\"offset\":0,\"searchable\":\"Y\",\"order\":{}},\"role_no\":90},\"txn_body\":{\"inst_no\":\"107\",\"filter_spec\":[],\"sort_spec\":[]}}```\nResponse\n```{\n    \"result\": {\n        \"new_txn_id\": \"107261012000004286\",\n        \"status\": \"E\",\n        \"message\": [\n            \"Sorry, you do not have access to the requested service!\"\n        ]\n    }\n}```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791874686322929", "channel": "", "severity": "", "by": "@Devansh Malviya", "ts": 1791874686.32292, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}, {"sr": 82, "desc": "Hello @CK @Aman Sen Please can you check why are we getting below in this request in RWHUZADEV\n```{\"txn_header\":{\"txn_no\":20718,\"channel_id\":21,\"maker\":100002,\"api_version\":\"1\",\"role_no\":81},\"txn_body\":{\"inst_no\":\"107\",\"employer_no\":10001,\"cut_off_date\":\"2026-10-20\"}}```\n\n```{\n    \"result\": {\n        \"new_txn_id\": \"107261012000004679\",\n        \"status\": \"E\",\n        \"message\": \"Unknown error occurred (ref: 1ff13eb8-e088-4f69-8c12-ea7c5c791516)\"\n    }\n}```", "link": "https://powerfinancial.slack.com/archives/C077R8W3894/p1791875366433809", "channel": "", "severity": "", "by": "@Abhishek", "ts": 1791875366.4338, "qa": "", "dev": "", "qa2": "", "qac": "", "devc": ""}];
+const STORE_KEY = 'rwanda-bug-dashboard:v1';
+let RAW = ORIGINAL, imported = false;
+try { const s = localStorage.getItem(STORE_KEY); if (s) { RAW = JSON.parse(s); imported = true; } } catch(e) {}
+
+const ST_ORDER = ['Open','Reopened','Needs clarification','Pending retest','Fixed – awaiting QA','Intermittent','Closed','Not replicable','Not an issue','Deferred','Duplicate'];
+const IST = {timeZone:'Asia/Kolkata'};
+const low = s => (s||'').toString().trim().toLowerCase();
+
+function redact(s){
+  if(typeof s!=='string') return '';
+  s = s.replace(/\\n/g,'\n').replace(/(Bearer\s+)[A-Za-z0-9._\-]+/g,'$1[redacted]')
+       .replace(/(x-core-channelaccesskey:\s*\^?"?)[0-9a-fA-F]{16,}/g,'$1[redacted]');
+  if(s.length>3000) s = s.slice(0,3000)+'\n… [truncated]';
+  return s.trim();
+}
+function derive(r){
+  const c = low(r.qac), q2 = low(r.qa2), d = low(r.dev), q = low(r.qa);
+  if(c.startsWith('duplicate')||q2.startsWith('duplicate')) return 'Duplicate';
+  if(c==='pass') return 'Closed';
+  if(c==='failed') return 'Reopened';
+  if(q2==='pass') return 'Closed';
+  if(q2==='failed') return 'Reopened';
+  if(q2==='intermittent') return 'Intermittent';
+  if(q2.startsWith('pending')) return 'Pending retest';
+  if(d.includes('not replicable')) return 'Not replicable';
+  if(d.includes('not an issue')) return 'Not an issue';
+  if(d.includes('will cater')) return 'Deferred';
+  if(d.includes('elaborate')) return 'Needs clarification';
+  if(d.includes('fixed')){
+    if(q==='pass') return 'Closed';
+    if(q==='failed') return 'Reopened';
+    if(q==='intermittent') return 'Intermittent';
+    return 'Fixed – awaiting QA';
+  }
+  if(q==='pass') return 'Closed';
+  if(q==='failed') return 'Reopened';
+  if(q==='intermittent') return 'Intermittent';
+  return 'Open';
+}
+function devNorm(r){
+  const d = low(r.dev);
+  if(!d) return 'Awaiting dev';
+  if(d.includes('not replicable')) return 'Not replicable';
+  if(d.includes('not an issue')) return 'Not an issue';
+  if(d.includes('will cater')) return 'Deferred';
+  if(d.includes('fixed')) return 'Fixed';
+  return r.dev;
+}
+const cap = s => s ? s.charAt(0).toUpperCase()+s.slice(1).toLowerCase() : '';
+function title(desc){
+  const MENTION=/^(?:(?:hi|hello|hey)\s+)?@[A-Za-z]+(?:\s(?:Limaye|Raikwar|Shri|Agrawal|Sen|Rathore|Malviya|Sharma))*(?:\s?[Ss]ir)?[\s,.]*/i;
+  const body=(desc||'').split('```')[0];
+  let t='';
+  for(let line of body.split('\n')){
+    line=line.trim(); if(!line) continue;
+    let prev; do{ prev=line; line=line.replace(MENTION,''); }while(line!==prev);
+    line=line.replace(/^(?:hi|hello|hey)[\s,]+/i,'').trim();
+    if(line){ t=line; break; }
+  }
+  if(!t) t=(desc||'').replace(/\s+/g,' ').trim().slice(0,140);
+  t=t.charAt(0).toUpperCase()+t.slice(1);
+  return t.length>170 ? t.slice(0,167)+'…' : t;
+}
+function dayKey(ts){ return ts ? new Date(ts*1000).toLocaleDateString('en-CA',IST) : 'Undated'; }
+function prep(rows){
+  return rows.map(r=>{
+    let ts = r.ts;
+    if(!ts){ const m=(r.link||'').match(/\/p(\d{10})/); if(m) ts=+m[1]; }
+    return Object.assign({}, r, {
+      ts, day: dayKey(ts), status: derive(r), devN: devNorm(r),
+      by: (r.by||'—').replace(/^@/,'') || '—', title: title(r.desc),
+      qaN: cap(r.qa)||'—', qa2N: cap(r.qa2)||'—'
+    });
+  });
+}
+let DATA = prep(RAW);
+const hasSeverity = () => DATA.some(r=>r.severity);
+
+const state = {q:'',status:'',dev:'',by:'',day:'',sort:'sr',dir:1,open:new Set()};
+const $ = id => document.getElementById(id);
+const esc = s => (s||'').toString().replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const chipCls = s => 'c-'+s.split(/[\s–]/)[0];
+
+function filtered(skip){
+  const q = low(state.q);
+  return DATA.filter(r=>{
+    if(skip!=='status' && state.status && r.status!==state.status) return false;
+    if(skip!=='dev' && state.dev && r.devN!==state.dev) return false;
+    if(skip!=='by' && state.by && r.by!==state.by) return false;
+    if(skip!=='day' && state.day && r.day!==state.day) return false;
+    if(q && !(r.desc+' '+r.qac+' '+r.devc+' '+r.by).toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+function counts(rows,key){ const m={}; rows.forEach(r=>m[r[key]]=(m[r[key]]||0)+1); return m; }
+
+function hbars(el,rows,key,sel,onPick,order){
+  const m = counts(rows,key);
+  let keys = Object.keys(m);
+  keys.sort(order ? (a,b)=>(order.indexOf(a)<0?99:order.indexOf(a))-(order.indexOf(b)<0?99:order.indexOf(b)) : (a,b)=>m[b]-m[a]);
+  const max = Math.max(1,...Object.values(m));
+  el.innerHTML = keys.map(k=>`<div class="hbar ${sel===k?'sel':''}" data-k="${esc(k)}"><span class="lab" title="${esc(k)}">${esc(k)}</span><span class="track"><span class="fill" style="width:${m[k]/max*100}%"></span></span><span class="val">${m[k]}</span></div>`).join('') || '<div class="empty">No data</div>';
+  el.querySelectorAll('.hbar').forEach(b=>b.onclick=()=>onPick(b.dataset.k));
+}
+function toggle(key,val){ state[key] = state[key]===val ? '' : val; render(); }
+
+function renderKpis(){
+  const all = DATA, n = all.length;
+  const cnt = s => all.filter(r=>s.includes(r.status)).length;
+  const closed = cnt(['Closed']);
+  const items = [
+    ['Total items', n, ''],
+    ['Closed', closed, 'Closed'],
+    ['Awaiting QA / retest', cnt(['Fixed – awaiting QA','Pending retest']), 'Fixed – awaiting QA'],
+    ['Open', cnt(['Open','Needs clarification']), 'Open'],
+    ['Reopened', cnt(['Reopened']), 'Reopened'],
+    ['Intermittent', cnt(['Intermittent']), 'Intermittent'],
+    ['Closure rate', n ? Math.round(closed/n*100)+'%' : '–', '']
+  ];
+  $('kpis').innerHTML = items.map(([l,v,f])=>`<button class="kpi ${f&&state.status===f?'active':''}" data-f="${esc(f)}"><div class="n">${v}</div><div class="l">${l}</div></button>`).join('');
+  $('kpis').querySelectorAll('.kpi').forEach(b=>b.onclick=()=>{ const f=b.dataset.f; if(f) toggle('status',f); });
+}
+function renderDays(){
+  const rows = filtered('day'), m = {};
+  rows.forEach(r=>{ const o = m[r.day] = m[r.day]||{c:0,o:0}; r.status==='Closed'?o.c++:o.o++; });
+  const keys = Object.keys(m).sort((a,b)=> a==='Undated'?1: b==='Undated'?-1: a.localeCompare(b));
+  const max = Math.max(1,...keys.map(k=>m[k].c+m[k].o));
+  $('chDays').innerHTML = keys.map(k=>{
+    const o=m[k], h=v=>Math.round(v/max*104);
+    const lab = k==='Undated'?'n/a':new Date(k+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    return `<div class="col ${state.day===k?'sel':''}" data-k="${k}" title="${k}: ${o.c} closed, ${o.o} not closed"><span class="tot">${o.c+o.o}</span><div class="stack"><div class="s1" style="height:${h(o.c)}px"></div><div class="s2" style="height:${h(o.o)}px"></div></div><span class="lab">${lab}</span></div>`;
+  }).join('') || '<div class="empty">No data</div>';
+  $('chDays').querySelectorAll('.col').forEach(c=>c.onclick=()=>toggle('day',c.dataset.k));
+}
+function fillSelect(id,label,vals,cur){
+  const el=$(id); el.innerHTML = `<option value="">${label}</option>`+vals.map(v=>`<option ${v===cur?'selected':''} value="${esc(v)}">${esc(v)}</option>`).join('');
+}
+function renderFilters(){
+  const stat = ST_ORDER.filter(s=>DATA.some(r=>r.status===s));
+  fillSelect('fStatus','All statuses',stat,state.status);
+  fillSelect('fDev','All dev statuses',[...new Set(DATA.map(r=>r.devN))].sort(),state.dev);
+  fillSelect('fBy','All reporters',[...new Set(DATA.map(r=>r.by))].sort(),state.by);
+  fillSelect('fDay','All dates',[...new Set(DATA.map(r=>r.day))].sort(),state.day);
+}
+const COLS = [
+  ['sr','#'],['title','Issue'],['day','Reported'],['by','Reported by'],['qaN','QA'],['devN','Dev'],['qa2N','2nd sanity'],['status','Status'],['link','']
+];
+function renderTable(){
+  const sev = hasSeverity();
+  const cols = COLS.slice(); if(sev) cols.splice(3,0,['severity','Severity']);
+  $('thead').innerHTML = cols.map(([k,l])=>`<th data-k="${k}" class="${state.sort===k?'sorted':''}">${l}${state.sort===k?(state.dir>0?' ▲':' ▼'):''}</th>`).join('');
+  $('thead').querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(!k||k==='link') return; state.dir = state.sort===k ? -state.dir : 1; state.sort=k; renderTable(); });
+  const rows = filtered().slice().sort((a,b)=>{
+    const k=state.sort; let x=a[k], y=b[k];
+    if(k==='sr') return (x-y)*state.dir;
+    if(k==='status'){ x=ST_ORDER.indexOf(x); y=ST_ORDER.indexOf(y); return (x-y)*state.dir; }
+    if(k==='day'){ x = x==='Undated'?'9999':x; y = y==='Undated'?'9999':y; }
+    return (''+x).localeCompare(''+y)*state.dir;
+  });
+  $('count').textContent = `${rows.length} of ${DATA.length} items`;
+  if(!rows.length){ $('tbody').innerHTML = `<tr><td colspan="${cols.length}" class="empty">No items match the current filters.</td></tr>`; return; }
+  $('tbody').innerHTML = rows.map(r=>{
+    const open = state.open.has(r.sr);
+    const cells = cols.map(([k])=>{
+      if(k==='title') return `<td class="issue">${esc(r.title)}</td>`;
+      if(k==='status') return `<td><span class="chip ${chipCls(r.status)}">${esc(r.status)}</span></td>`;
+      if(k==='link') return `<td>${r.link?`<a href="${esc(r.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Slack</a>`:''}</td>`;
+      if(k==='day') return `<td style="white-space:nowrap">${r.day==='Undated'?'—':new Date(r.day+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</td>`;
+      return `<td>${esc(r[k]===''?'—':r[k])}</td>`;
+    }).join('');
+    const det = open ? `<tr class="detail"><td colspan="${cols.length}">
+      <div class="k">Issue description</div><pre>${esc(r.desc)}</pre>
+      ${r.qac?`<div class="k">QA comment</div><pre>${esc(r.qac)}</pre>`:''}
+      ${r.devc?`<div class="k">Dev comments</div><pre>${esc(r.devc)}</pre>`:''}
+    </td></tr>` : '';
+    return `<tr class="row" data-sr="${r.sr}">${cells}</tr>${det}`;
+  }).join('');
+  $('tbody').querySelectorAll('tr.row').forEach(tr=>tr.onclick=()=>{ const n=+tr.dataset.sr; state.open.has(n)?state.open.delete(n):state.open.add(n); renderTable(); });
+}
+function render(){
+  const dated = DATA.map(r=>r.day).filter(d=>d!=='Undated').sort();
+  $('sub').textContent = `${DATA.length} items` + (dated.length?` · ${new Date(dated[0]+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${new Date(dated[dated.length-1]+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`:'') + (imported?' · loaded from uploaded file':' · Source: Rwanda_26_01_-_Bug.xlsx');
+  $('resetData').hidden = !imported;
+  renderKpis();
+  hbars($('chStatus'),filtered('status'),'status',state.status,k=>toggle('status',k),ST_ORDER);
+  renderDays();
+  hbars($('chDev'),filtered('dev'),'devN',state.dev,k=>toggle('dev',k));
+  hbars($('chBy'),filtered('by'),'by',state.by,k=>toggle('by',k));
+  renderFilters();
+  renderTable();
+}
+
+$('q').oninput = e=>{ state.q=e.target.value; renderTable(); $('count').scrollIntoView({block:'nearest'}); };
+[['fStatus','status'],['fDev','dev'],['fBy','by'],['fDay','day']].forEach(([id,k])=>$(id).onchange=e=>{ state[k]=e.target.value; render(); });
+$('clear').onclick = ()=>{ Object.assign(state,{q:'',status:'',dev:'',by:'',day:''}); $('q').value=''; render(); };
+
+$('exportBtn').onclick = ()=>{
+  const rows = filtered();
+  const head = ['Sr.No.','Issue','Reported','Reported by','QA status','Dev status','QA 2nd sanity','Status','QA comment','Dev comments','Slack link'];
+  const q = v=>'"'+(v==null?'':String(v)).replace(/"/g,'""')+'"';
+  const csv = [head.map(q).join(',')].concat(rows.map(r=>[r.sr,r.desc,r.day,r.by,r.qa,r.dev,r.qa2,r.status,r.qac,r.devc,r.link].map(q).join(','))).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+  a.download = 'bug_log_filtered.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+$('file').onchange = async e=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    if(typeof XLSX==='undefined') throw new Error('Excel reader did not load');
+    const wb = XLSX.read(await f.arrayBuffer(),{type:'array'});
+    let rows=null;
+    for(const n of wb.SheetNames){
+      const j = XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:'',raw:true});
+      if(j.length && Object.keys(j[0]).some(k=>low(k)==='issue description')){ rows=j; break; }
+    }
+    if(!rows) throw new Error('No sheet with an "Issue Description" column was found');
+    const g=(o,name)=>{ const k=Object.keys(o).find(k=>low(k)===name); return k===undefined?'':o[k]; };
+    const toTs = v=>{ if(v===''||v==null) return null; if(v instanceof Date) return v.getTime()/1000; const n=+v; if(!isFinite(n)) { const d=Date.parse(v); return isNaN(d)?null:d/1000; } return n>1e9 ? n : (n-25569)*86400; };
+    const out = rows.filter(o=>g(o,'issue description')!=='').map((o,i)=>({
+      sr: +g(o,'sr.mo.')||+g(o,'sr.no.')||i+1,
+      desc: redact(String(g(o,'issue description'))), link: String(g(o,'slack link')||'').trim(),
+      channel: String(g(o,'channel')||'').trim(), severity: String(g(o,'severity')||'').trim(),
+      by: String(g(o,'reported by')||'').trim(), ts: toTs(g(o,'date reported')),
+      qa: String(g(o,'qa status')||'').trim(), dev: String(g(o,'dev status')||'').trim(),
+      qa2: String(g(o,'qa status 2nd sanity')||'').trim(),
+      qac: redact(String(g(o,'qa comment')||'')), devc: redact(String(g(o,'dev comments')||''))
+    }));
+    RAW = out; imported = true; DATA = prep(RAW);
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(RAW)); }catch(_){}
+    Object.assign(state,{q:'',status:'',dev:'',by:'',day:''}); state.open.clear(); $('q').value='';
+    render();
+  }catch(err){ alert('Could not read that file: '+err.message); }
+  e.target.value='';
+};
+$('resetData').onclick = ()=>{
+  try{ localStorage.removeItem(STORE_KEY); }catch(_){}
+  RAW = ORIGINAL; imported=false; DATA = prep(RAW); state.open.clear(); render();
+};
+render();
+</script>
+</body>
+</html>
